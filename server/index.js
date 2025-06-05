@@ -1,12 +1,16 @@
 const express = require('express');
 const cors = require('cors');
+const db = require('./db');
+const authRoutes = require('./routes/auth');
+
 const app = express();
 const PORT = 5000;
-const db = require('./db');
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+app.use('/api/auth', authRoutes);
 
 // Testing the API route
 app.get('/', (req, res) => {
