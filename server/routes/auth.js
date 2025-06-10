@@ -11,8 +11,10 @@ router.post('/register', async (req, res) => {
   // Hash the password
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const sql = 'INSERT INTO users (name, email, password) VALUES (?, ?, ?)';
-  db.query(sql, [name, email, hashedPassword], (err, result) => {
+  const sql = 'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)';
+  const defaultRole = 'user';
+
+  db.query(sql, [name, email, hashedPassword, defaultRole], (err, result) => {
     if (err) {
       if (err.code === 'ER_DUP_ENTRY') {
         return res.status(400).json({ message: 'Email already registered' });
@@ -44,11 +46,11 @@ router.post('/login', (req, res) => {
     // Generate JWT token
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
-      'secretkey123', // NOTE: Move this to .env in production
+      'secretkey123', 
       { expiresIn: '1d' }
     );
 
-    res.json({ message: 'Login successful', token, user: { id: user.id, name: user.name, role: user.role } });
+    res.json({ message: 'Login successful', token, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
   });
 });
 
